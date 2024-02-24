@@ -1,35 +1,57 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import "./App.css";
+const App = () => {
+  const [data, setData] = useState([]);
 
-function App() {
-  const [count, setCount] = useState(0)
+  const fetchData = async () => {
+    // const url = `https://api.spotify.com/v1/search?q=${query}&type=album&limit=20&include_external=audio`;
+    const url = `https://api.spotify.com/v1/artists/3TVXtAsR1Inumwj472S9r4/albums?limit=20`;
+    const options = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer BQALsue6sIieKFIL6YP0bIog4-qj7fiXZ88wJUAeJBZM1O-8kzyH0M1GKjZPqQYpekqJfCUEPAnX6BuG3FmtBEjckVVVd_ykiO9Y8S-AepfBJVW3M-Q",
+      },
+    };
+
+    const response = await fetch(url, options);
+    const data = await response.json();
+    console.log(data.items);
+    setData(data.items);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <h1>Movies Data</h1>
+        {data.map((items) => {
+          return (
+            <>
+              <div className="flex justify-center items-center flex-wrap">
+                <div className="w-60 p-2 bg-white rounded-xl flex flex-col">
+                  <img
+                    className="h-40 object-cover rounded-xl"
+                    src={items.images[1].url}
+                    alt={items.name}
+                  />
+                  <h2 className="font-bold tetx-lg">{items.name}</h2>
+                  <p className="text-sm text-grey-600">
+                    {" "}
+                    By {items.artists[0].name}
+                  </p>
+                </div>
+              </div>
+            </>
+          );
+        })}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
